@@ -12,7 +12,6 @@ We can check if my wallat is active or not. If users login to metamsak normally,
 
 <figure>
 	<a href="https://x2ever.github.io//vote.html"><img src="https://x2ever.github.io//images/vote_dapp_header.png"></a>
-	<center><a href="{{ site.url }}/vote.html" title="Vote Dapp Header">Vote Dapp Header</a>.</center>
 </figure>
 
 ### For Admin
@@ -21,7 +20,6 @@ If you are admin of this vote, you can give right to vote to others.
 
 <figure>
 	<a href="https://x2ever.github.io//vote.html"><img src="https://x2ever.github.io//images/vote_dapp_admin.png"></a>
-	<center><a href="https://x2ever.github.io//vote.html" title="Vote Dapp Admin">Vote Dapp Admin</a>.</center>
 </figure>
 
 ### Alert message 1
@@ -30,7 +28,6 @@ While using blockchain, we should wait for transactions to be included in the bl
 
 <figure>
 	<a href="https://x2ever.github.io//vote.html"><img src="https://x2ever.github.io//images/vote_dapp_alert.png"></a>
-	<center><a href="{{ site.url }}/vote.html" title="Vote Dapp Alert message">Vote Dapp Alert message</a>.</center>
 </figure>
 
 ### Alert message 2
@@ -39,7 +36,6 @@ While using Smart contract, Some transactions are reverted. This alert message c
 
 <figure>
 	<a href="https://x2ever.github.io//vote.html"><img src="https://x2ever.github.io//images/vote_dapp_alert2.png"></a>
-	<center><a href="https://x2ever.github.io//vote.html" title="Vote Dapp Alert messagee">Vote Dapp Alert message2</a>.</center>
 </figure>
 
 ### User Information
@@ -48,7 +44,6 @@ Check User Informations. And Use delegate function with easy UI.
 
 <figure>
 	<a href="https://x2ever.github.io//vote.html"><img src="https://x2ever.github.io//images/vote_dapp_user.png"></a>
-	<center><a href="https://x2ever.github.io//vote.html" title="Vote Dapp User Info">Vote Dapp User Info</a>.</center>
 </figure>
 
 ### Proposal list
@@ -57,7 +52,6 @@ See propsal list. And User vote function with easy UI.
 
 <figure>
 	<a href="https://x2ever.github.io//vote.html"><img src="https://x2ever.github.io//images/vote_dapp_proposals.png"></a>
-	<center><a href="https://x2ever.github.io//vote.html" title="Vote Dapp Proposal list">Vote Dapp Proposal list</a>.</center>
 </figure>
 
 ### Result
@@ -66,5 +60,4 @@ At the end of this series, you can complete the following vote dapp. The source 
 
 <figure>
 	<a href="https://x2ever.github.io//vote.html"><img src="https://x2ever.github.io//images/vote_dapp_capture.png"></a>
-	<center><a href="https://x2ever.github.io//vote.html" title="Vote Dapp Example">Vote Dapp Full Example</a>.</center>
 </figure>
