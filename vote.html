@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voting Dapp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+            integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+            integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/ethereum/web3.js/develop/dist/web3.js"></script>
+    <script>
+        function updateTextInput(val) {
+            document.getElementById('textInput').value=val;
+        }
+    </script>
+    <script>
+    const contractAddress = '0x61a09d85a02b2233183e15b61f6173bf6cead337';
+    const abi = [
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "delegate",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "voter",
+				"type": "address"
+			}
+		],
+		"name": "giveRightToVote",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "proposal",
+				"type": "uint256"
+			}
+		],
+		"name": "vote",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "proposalNames",
+				"type": "bytes32[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "chairperson",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "proposal_num",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "proposals",
+		"outputs": [
+			{
+				"name": "name",
+				"type": "bytes32"
+			},
+			{
+				"name": "voteCount",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "voterInfo",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "voters",
+		"outputs": [
+			{
+				"name": "weight",
+				"type": "uint256"
+			},
+			{
+				"name": "voted",
+				"type": "bool"
+			},
+			{
+				"name": "delegate",
+				"type": "address"
+			},
+			{
+				"name": "vote",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "winnerName",
+		"outputs": [
+			{
+				"name": "winnerName_",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "winningProposal",
+		"outputs": [
+			{
+				"name": "winningProposal_",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+    let ballotContract;
+    let ballot;
+
+    const converterContractAddress = '0x6c25187c50fcae96cf29a1f307a5fded04793839';
+    const converterAbi = [
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "x",
+				"type": "bytes32"
+			}
+		],
+		"name": "bytes32ToString",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "source",
+				"type": "string"
+			}
+		],
+		"name": "stringToBytes32",
+		"outputs": [
+			{
+				"name": "result",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
+		"type": "function"
+	}
+];
+    let converterContract;
+    let converter;
+
+    window.addEventListener('load', function() {
+    if (typeof web3 !== 'undefined') {
+        window.web3 = new Web3(web3.currentProvider);
+    } else {
+        console.log('No web3? You should consider trying MetaMask!')
+        window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    }
+    startApp();
+    });
+
+    function delegate(value) {
+        ballot.delegate(value, function(e, r){
+            document.getElementById('title').innerHTML  = '<h3><strong>Waiting For Delegate Tx to be mined.</strong></h3>';
+            document.getElementById('txid').innerHTML = '<p><strong>Tx ID:   ' + r + '</strong></p>';
+            document.getElementById('tx-alert').style.backgroundColor = "#58D3F7";
+            document.getElementById('tx-alert').style.color = "PapayaWhip  ";
+            document.getElementById('tx-alert').style.padding = "1.2rem";
+            document.getElementById('button').innerHTML = '';
+            txid = r;
+            var filter = web3.eth.filter('latest');
+            filter.watch(function(e, r){
+                web3.eth.getTransaction(txid, function(e, r){
+                    if (r != null && r.blockNumber > 0) {
+                        web3.eth.getTransactionReceipt(txid, function(e, r){
+                           if (!Boolean(Number(r.status))){
+                               document.getElementById('title').innerHTML  = '<h3><strong>Delegate Tx Reverted!</strong></h3>';
+                               document.getElementById('txid').innerHTML = '';
+                               document.getElementById('tx-alert').style.backgroundColor = "red";
+                               document.getElementById('tx-alert').style.color = "white";
+                               document.getElementById('tx-alert').style.padding = "1.2rem";
+                               document.getElementById('button').innerHTML = '<button class="close" onclick="alert_clear();" style="color: white">&times;</button>';
+                           } else{
+                               document.getElementById('title').innerHTML  = '';
+                               document.getElementById('txid').innerHTML = '';
+                               document.getElementById('tx-alert').style.backgroundColor = "white";
+                               document.getElementById('tx-alert').style.color = "white";
+                               document.getElementById('tx-alert').style.padding = "0rem";
+                               document.getElementById('button').innerHTML = '';
+                               voterInfo();
+                           }
+                           filter.stopWatching();
+                        });
+                    }
+                });
+            });
+        });
+    }
+    function getproposals(num){
+        ballot.proposals(num, function(e, r){
+            var voteNum = r[1].c[0];
+            converter.bytes32ToString(r[0], function(e, r){
+                document.getElementById('proposal_list').innerHTML = document.getElementById('proposal_list').innerHTML + '<div class="card" style="margin: 1rem 0rem">' +
+                    '<h3 class="card-header">' + r + '</h3>' +
+                    '<div class="card-body row">' +
+                    '<dt class="col-4">Vote Count:</dt>' +
+                    '<dd class="col-4"><span class="badge badge-primary badge-pill">' + voteNum + '</span></dd>' +
+                    '<button onclick="vote(' + num +')" class="col-3 btn btn-outline-warning btn-sm">Vote</button>' +
+                    '</div>' +
+                    '</div>'
+                if (num > 0){
+                    getproposals(num-1);
+                }
+            });
+        });
+    }
+
+    function updateProposalList(){
+        document.getElementById('proposal_list').innerHTML = '';
+        ballot.proposal_num(function(e, r){
+           let  proposal_num = r - 1;
+           if (proposal_num == -1){
+               document.getElementById('proposal_list').innerHTML = '<h1> There are no Proposals</h1>';
+           } else{
+               getproposals(proposal_num);
+           }
+
+        });
+    }
+    function alert_clear(){
+        document.getElementById('title').innerHTML  = '';
+        document.getElementById('txid').innerHTML = '';
+        document.getElementById('tx-alert').style.backgroundColor = "white";
+        document.getElementById('tx-alert').style.color = "white";
+        document.getElementById('tx-alert').style.padding = "0rem";
+        document.getElementById('button').innerHTML = '';
+    }
+    function giveRight(address){
+        ballot.giveRightToVote(address, function (e, r) {
+            document.getElementById('title').innerHTML  = '<h3><strong>Waiting For Right Giving Tx to be mined.</strong></h3>';
+            document.getElementById('txid').innerHTML = '<p><strong>Tx ID:   ' + r + '</strong></p>';
+            document.getElementById('tx-alert').style.backgroundColor = "#58D3F7";
+            document.getElementById('tx-alert').style.color = "PapayaWhip  ";
+            document.getElementById('tx-alert').style.padding = "1.2rem";
+            document.getElementById('button').innerHTML = '';
+            var txid = r;
+            var filter = web3.eth.filter('latest');
+            filter.watch(function(e, r){
+                web3.eth.getTransaction(txid, function(e, r){
+                    if (r != null && r.blockNumber > 0) {
+                        web3.eth.getTransactionReceipt(txid, function(e, r){
+                           if (!Boolean(Number(r.status))){
+                               document.getElementById('title').innerHTML  = '<h3><strong>Right Giving Tx Reverted!</strong></h3>';
+                               document.getElementById('txid').innerHTML = '';
+                               document.getElementById('tx-alert').style.backgroundColor = "red";
+                               document.getElementById('tx-alert').style.color = "white";
+                               document.getElementById('tx-alert').style.padding = "1.2rem";
+                               document.getElementById('button').innerHTML = '<button class="close" onclick="alert_clear();" style="color: white">&times;</button>';
+                           } else{
+                               document.getElementById('title').innerHTML  = '';
+                               document.getElementById('txid').innerHTML = '';
+                               document.getElementById('tx-alert').style.backgroundColor = "white";
+                               document.getElementById('tx-alert').style.color = "white";
+                               document.getElementById('tx-alert').style.padding = "0rem";
+                               document.getElementById('button').innerHTML = '';
+                               voterInfo();
+                           }
+                           filter.stopWatching();
+                        });
+                    }
+                });
+            });
+        });
+    }
+
+    function startApp() {
+        ballotContract = web3.eth.contract(abi);
+        ballot = ballotContract.at(contractAddress);
+
+        converterContract = web3.eth.contract(converterAbi);
+        converter = converterContract.at(converterContractAddress);
+
+        voterInfo();
+        alert_clear();
+        updateProposalList()
+
+        web3.eth.getAccounts(function(e,r){
+            document.getElementById('accountAddr').innerHTML = getLink(r[0]);
+            var myAddress = r[0];
+            ballot.chairperson(function(e, r){
+                if (myAddress == r){
+                        document.getElementById('admin_give_vote_right').innerHTML  = '<div class="row">' +
+                            '<div class="col-9">' +
+                            '<input type="text" class="form-control" id="rigjt_input" style="border-color: red; border-width: 0.2rem;" placeholder="Give Vote Right to other" required>' +
+                            '</div>' +
+                            '<div class="col">' +
+                            '<button class="btn btn-outline-danger btn-sm btn-block" style="padding: 0.5rem 0rem" onclick="giveRight(document.getElementById(\'rigjt_input\').value);">Give Vote Right To Other</button>' +
+                            '</div>' +
+                            '</div>';
+                        document.getElementById('admin_page').style.padding = "1.2rem";
+                }
+            });
+        });
+    }
+
+    function getLink(addr) {
+        if (addr == undefined){
+            return '<span> <strong>Please Login to MetaMask</strong> </span>';
+        } else{
+            return '<span> <strong class="text-dark">My Account:<a class="btn btn-link text-dark"  href=https://ropsten.etherscan.io//address/' + addr + '>' + addr +'</a> </strong> </span>';
+        }
+    }
+    function voteResultClear() {
+        document.getElementById('vote_result').innerHTML  = '';
+        document.getElementById('vote_result_button').innerHTML = '';
+        document.getElementById('vote_result_box').style.backgroundColor ="white";
+        document.getElementById('vote_result_box').style.color = "white";
+        document.getElementById('vote_result_box').style.padding = "0rem";
+        document.getElementById('vote_result_box').style.margin = "0rem";
+    }
+    function getVoteResult() {
+        ballot.winnerName(function(e, r){
+            converter.bytes32ToString(r, function (e, r) {
+                document.getElementById('vote_result').innerHTML  = '<h3><strong>As of now, <span style="font-size: 2rem">' + r + '</span> is the Winner.</strong></h3>';
+                document.getElementById('vote_result_button').innerHTML = '<button class="close" onclick="voteResultClear();" style="color: white">&times;</button>';
+                document.getElementById('vote_result_box').style.backgroundColor = "#58D3F7";
+                document.getElementById('vote_result_box').style.color = "PapayaWhip  ";
+                document.getElementById('vote_result_box').style.padding = "1.2rem";
+                document.getElementById('vote_result_box').style.margin = "1rem 0rem";
+            });
+        });
+    }
+    function vote(index) {
+        var txid;
+        ballot.vote(index, function(e, r){
+            document.getElementById('title').innerHTML  = '<h3><strong>Waiting For Vote Tx to be mined.</strong></h3>';
+            document.getElementById('txid').innerHTML = '<p><strong>Tx ID:   ' + r + '</strong></p>';
+            document.getElementById('tx-alert').style.backgroundColor = "#58D3F7";
+            document.getElementById('tx-alert').style.color = "PapayaWhip  ";
+            document.getElementById('tx-alert').style.padding = "1.2rem";
+            document.getElementById('button').innerHTML = '';
+            txid = r;
+        });
+        var filter = web3.eth.filter('latest');
+        filter.watch(function(e, r){
+            web3.eth.getTransaction(txid, function(e, r){
+                if (r != null && r.blockNumber > 0) {
+                    web3.eth.getTransactionReceipt(txid, function(e, r){
+                       if (!Boolean(Number(r.status))){
+                           document.getElementById('title').innerHTML  = '<h3><strong>Vote Tx Reverted!</strong></h3>';
+                           document.getElementById('txid').innerHTML = '';
+                           document.getElementById('tx-alert').style.backgroundColor = "red";
+                           document.getElementById('tx-alert').style.color = "white";
+                           document.getElementById('tx-alert').style.padding = "1.2rem";
+                           document.getElementById('button').innerHTML = '<button class="close" onclick="alert_clear();" style="color: white">&times;</button>';
+                       } else{
+                           document.getElementById('title').innerHTML  = '';
+                           document.getElementById('txid').innerHTML = '';
+                           document.getElementById('tx-alert').style.backgroundColor = "white";
+                           document.getElementById('tx-alert').style.color = "white";
+                           document.getElementById('tx-alert').style.padding = "0rem";
+                           document.getElementById('button').innerHTML = '';
+                       }
+                       filter.stopWatching();
+                    });
+                }
+            });
+        });
+    }
+
+    function voterInfo() {
+        ballot.voterInfo.call(function(e, r){
+            document.getElementById('weight').innerHTML = r[0].c[0];
+            document.getElementById('voted').innerHTML = r[1];
+            if (r[2] == '0x0000000000000000000000000000000000000000'){
+                document.getElementById('delegate').innerHTML = 'None';
+            } else{
+                document.getElementById('delegate').innerHTML = r[2];
+            }
+            if (r[1] == false){
+                console.log(r)
+                document.getElementById('vote').innerHTML = 'None';
+            } else{
+                ballot.proposals.call( r[3].c[0], function(e, r){
+                    converter.bytes32ToString.call(r[0], function (e, r) {
+                        document.getElementById('vote').innerHTML = r;
+                    })
+                });
+            }
+        });
+    };
+
+    </script>
+    <style>
+        @media (max-width:360px){html{font-size:4.5px;}}
+        @media (min-width:361px) and (max-width:399px){html{font-size:5px;}}
+        @media (min-width:400px) and (max-width:439px){html{font-size:5.5px;}}
+        @media (min-width:440px) and (max-width:479px){html{font-size:6px;}}
+        @media (min-width:480px) and (max-width:519px){html{font-size:6.5px;}}
+        @media (min-width:520px) and (max-width:559px){html{font-size:7px;}}
+        @media (min-width:560px) and (max-width:599px){html{font-size:7.5px;}}
+        @media (min-width:600px) and (max-width:639px){html{font-size:8px;}}
+        @media (min-width:640px) and (max-width:679px){html{font-size:8.5px;}}
+        @media (min-width:680px) and (max-width:719px){html{font-size:9px;}}
+        @media (min-width:720px) and (max-width:759px){html{font-size:9.5px;}}
+        @media (min-width:760px) and (max-width:799px){html{font-size:9px;}}
+        @media (min-width:800px) and (max-width:839px){html{font-size:9.5px;}}
+        @media (min-width:840px) and (max-width:879px){html{font-size:10px;}}
+        @media (min-width:880px) and (max-width:919px){html{font-size:10.5px;}}
+        @media (min-width:920px) and (max-width:959px){html{font-size:11px;}}
+        @media (min-width:960px) and (max-width:999px){html{font-size:11.5px;}}
+        @media (min-width:1000px) and (max-width:1039px){html{font-size:12px;}}
+        @media (min-width:1040px) and (max-width:1079px){html{font-size:12.5px;}}
+        @media (min-width:1080px) and (max-width:1119px){html{font-size:13px;}}
+        @media (min-width:1120px){html{font-size:14px;}}
+        h1 {
+            font-size:3em;
+        }
+        h2 {
+            font-size:1.8em;
+        }
+        h3 {
+        font-size:1.5em;
+        }
+        h4 {
+            font-size:1.3em;
+        }
+        h5 {
+        font-size:1.2em;
+        }
+        h6 {
+            font-size:1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="row" style="margin: 1rem">
+        <div class="col"></div>
+        <div class="col-8 row">
+            <div class="col-4">
+                <a  href="/"><img src="./images/vote.png" style="width: 100%" alt="Test image"></a>
+            </div>
+            <div class="col-1"></div>
+            <div class="col">
+                <div class="row" style="margin: 5rem 0rem;">
+                    <span class="col float-right" id="accountAddr"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+    <div class="row">
+    <div class="col"></div>
+    <div class="container page-form col-8">
+        <div class="fade show" id="tx-alert">
+            <span id="button"></span>
+            <span id="title"></span>
+            <span id="txid"></span>
+        </div>
+        <div class="fade show" id="vote_result_box">
+            <span id="vote_result_button"></span>
+            <span id="vote_result"></span>
+        </div>
+        <div class="fade show" id="admin_page">
+            <span id="admin_give_vote_right"></span>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="row" style="margin: 1rem 0rem">
+                    <div class="col">
+                        <h1>User Info</h1>
+                    </div>
+                    <button class="col-3 btn btn-outline-primary btn-sm col" onclick="voterInfo()">Inquire again</button>
+                </div>
+                <div class="row" style="margin: 1rem 0rem">
+                    <div class="col">
+                        <label for="delegate_input">Delegate address:</label>
+                        <input type="text" class="form-control" id="delegate_input" style="border-color: #7abaff; border-width: 0.2rem;" placeholder="Delegate Vote Right to other" required>
+                    </div>
+                    <div class="col-2" style="padding: 2.2rem 0rem 0rem 0rem">
+                        <button class="btn btn-outline-primary btn-sm" onclick="delegate(document.getElementById('delegate_input').value);">Delegate</button>
+                    </div>
+                </div>
+                <table class="table table-hover"  style="margin: 1rem">
+                <tbody>
+                    <tr>
+                    <th scope="row">Weight of Vote</th>
+                        <td id="weight"></td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Voted</th>
+                        <td id="voted"></td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Who delegated for</th>
+                        <td id="delegate"></td>
+                    </tr>
+                    <th scope="row">Who Voted For</th>
+                        <td id="vote"></td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            <div class="col" id="proposal_title">
+                <div class="row" style="margin: 1rem 0rem">
+                    <div class="col">
+                        <h1>Proposals</h1>
+                    </div>
+                    <button class="col-3 btn btn-outline-primary btn-sm col" onclick="getVoteResult()">Watch result</button>
+                </div>
+                <div id="proposal_list">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col"></div>
+    </div>
+</body>
+</html>
