@@ -1,8 +1,50 @@
 # Simple-Dapp
 
+## How to use?
+
+### Just for watching
+
+1.Install [Metamask](https://metamask.io/) with Chrome extension.
+
+<figure>
+	<a href="https://metamask.io/"><img src="images/metamask.png"></a>
+</figure>
+
+2.Login to Metamask. And set a network as a ropsten testnet.
+
+<figure>
+	<a href="https://metamask.io/"><img src="images/login_metamask.png"></a>
+</figure>
+
+3.[Click here!](https://x2ever.github.io/vote.html)
+
+### Make your own vote.
+
+4.Compile and Deploy from [Remix](https://remix.ethereum.org/) with this [Source](https://gist.github.com/x2ever/bbbfc522df6787291c0b2814d73fc581#file-ballot_0-5-2-sol).
+
+<figure>
+	<a href="https://metamask.io/"><img src="images/remix.png"></a>
+</figure>
+
+<script src="https://gist.github.com/x2ever/bbbfc522df6787291c0b2814d73fc581.js"></script>
+
+5.From step 4, You can get address of delpoyed contract. Copy and paste in here.
+
+<figure>
+	<a href="https://x2ever.github.io/vote.html"><img src="images/contract_address.png"></a>
+</figure>
+
+6.Open console and type 'startApp()'.
+
+<figure>
+	<a href="https://x2ever.github.io/vote.html"><img src="images/startApp.png"></a>
+</figure>
+
+
 ## How to make dapp?
 
-I'm posting a making dapp series in my [blog](https://x2ever.github.io/).
+<p>If you can't make your own dApp with above step, just follow me.</p>
+<p>I'm posting a making dApp series in my [blog](https://x2ever.github.io/).</p>
 
 ## Preview
 
