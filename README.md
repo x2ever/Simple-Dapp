@@ -1,4 +1,4 @@
-# Simple-Dapp
+# Simple-dApp
 
 ## How to use?
 
